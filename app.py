@@ -36,17 +36,18 @@ st.markdown("""
     .module-container {
         background: white;
         border-radius: 15px;
-        padding: 2rem;
-        margin: 1rem;
+        padding: 1.5rem;
+        margin: 0.5rem;
         box-shadow: 0 8px 32px rgba(0,0,0,0.08);
         border: 1px solid #e1e8ed;
         transition: all 0.3s ease;
         text-align: center;
-        height: 300px;
+        height: 350px;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        cursor: pointer;
+        position: relative;
+        overflow: hidden;
     }
     
     .module-container:hover {
@@ -55,65 +56,76 @@ st.markdown("""
         border-color: #2a5298;
     }
     
+    .module-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    
     .module-icon {
-        font-size: 4rem;
+        font-size: 3.5rem;
         margin-bottom: 1rem;
         color: #2a5298;
     }
     
     .module-title {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
         font-weight: 700;
         color: #1e3c72;
         margin-bottom: 0.5rem;
     }
     
     .module-subtitle {
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 600;
         color: #4a5568;
         margin-bottom: 1rem;
     }
     
     .module-description {
-        font-size: 0.95rem;
+        font-size: 0.9rem;
         color: #718096;
-        line-height: 1.5;
+        line-height: 1.4;
         margin-bottom: 1.5rem;
         flex-grow: 1;
     }
     
     .module-button {
         background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
-        color: white !important;
+        color: white;
         border: none;
-        padding: 12px 24px;
+        padding: 12px 20px;
         border-radius: 8px;
         font-weight: 600;
-        font-size: 1rem;
+        font-size: 0.95rem;
         cursor: pointer;
         transition: all 0.3s ease;
-        text-decoration: none !important;
-        display: inline-block;
+        text-decoration: none;
+        display: block;
         width: 100%;
+        margin-top: auto;
+        position: relative;
+        z-index: 10;
     }
     
     .module-button:hover {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
         transform: scale(1.02);
-        box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
-        color: white !important;
-        text-decoration: none !important;
+        box-shadow: 0 4px 15px rgba(30, 60, 114, 0.4);
+        color: white;
     }
     
-    .module-button:visited {
-        color: white !important;
-        text-decoration: none !important;
+    .module-button.coming-soon {
+        background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
+        cursor: not-allowed;
+        opacity: 0.7;
     }
     
-    .module-button:active {
-        color: white !important;
-        text-decoration: none !important;
+    .module-button.coming-soon:hover {
+        background: linear-gradient(135deg, #4a5568 0%, #718096 100%);
+        transform: none;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
     .grid-container {
@@ -125,17 +137,6 @@ st.markdown("""
         padding: 0 1rem;
     }
     
-    .coming-soon {
-        background: linear-gradient(135deg, #718096 0%, #4a5568 100%);
-        cursor: not-allowed;
-    }
-    
-    .coming-soon:hover {
-        background: linear-gradient(135deg, #4a5568 0%, #718096 100%);
-        transform: none;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
-    }
-    
     @media (max-width: 768px) {
         .grid-container {
             grid-template-columns: 1fr;
@@ -143,15 +144,47 @@ st.markdown("""
         .main-header h1 {
             font-size: 2rem;
         }
+        .module-container {
+            height: 320px;
+        }
     }
     
     .stApp {
         background-color: #f8fafc;
     }
     
-    /* Hide Streamlit default elements */
-    .stButton > button {
-        display: none;
+    /* Hide Streamlit buttons */
+    .element-container .stButton {
+        display: none !important;
+    }
+    
+    .backup-links {
+        margin-top: 2rem;
+        padding: 1rem;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    
+    .backup-button {
+        background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        margin: 0.25rem;
+    }
+    
+    .backup-button:hover {
+        background: linear-gradient(135deg, #38a169 0%, #48bb78 100%);
+        transform: scale(1.05);
+        color: white;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -240,65 +273,111 @@ modules = [
     }
 ]
 
-# Create grid layout with clickable buttons
+# Create grid layout with integrated module cards
+st.markdown('<div class="grid-container">', unsafe_allow_html=True)
+
+# Initialize cols variable
 cols = st.columns(3)
 
 for i, module in enumerate(modules):
+    if i % 3 == 0:
+        cols = st.columns(3)
+    
     col_index = i % 3
     
     with cols[col_index]:
         # Create unique key for each button
         button_key = f"module_{i}_{module['title'].replace(' ', '_').lower()}"
         
-        # Create module container with proper button
+        # Create module container with integrated button
         if module["available"]:
-            # Create a clickable button that opens URL
-            if st.button(
-                f"{module['icon']}\n\n**{module['title']}**\n\n{module['subtitle']}\n\n{module['description']}\n\n🚀 Launch Application",
-                key=button_key,
-                help=f"Click to open {module['title']}"
-            ):
-                st.write(f"🚀 Opening {module['title']}...")
-                st.markdown(f'<meta http-equiv="refresh" content="0; url={module["url"]}">', unsafe_allow_html=True)
-                # Alternative method using JavaScript
+            button_class = "module-button"
+            button_text = "🚀 Launch Application"
+            onclick_action = f"window.open('{module['url']}', '_blank');"
+        else:
+            button_class = "module-button coming-soon"
+            button_text = "⏳ Coming Soon"
+            onclick_action = "alert('This module is coming soon!');"
+        
+        # Render module card with integrated button
+        st.markdown(f"""
+        <div class="module-container">
+            <div class="module-content">
+                <div class="module-icon">{module['icon']}</div>
+                <div class="module-title">{module['title']}</div>
+                <div class="module-subtitle">{module['subtitle']}</div>
+                <div class="module-description">{module['description']}</div>
+            </div>
+            <button class="{button_class}" onclick="{onclick_action}">
+                {button_text}
+            </button>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Hidden Streamlit button for functionality
+        if module["available"]:
+            if st.button(f"Hidden {module['title']}", key=button_key, help="Hidden button"):
                 st.markdown(f"""
                 <script>
-                window.open('{module["url"]}', '_blank');
+                window.open('{module['url']}', '_blank');
                 </script>
                 """, unsafe_allow_html=True)
-        else:
-            # Coming soon button
-            if st.button(
-                f"{module['icon']}\n\n**{module['title']}**\n\n{module['subtitle']}\n\n{module['description']}\n\n⏳ Coming Soon",
-                key=button_key,
-                help="This module is coming soon",
-                disabled=True
-            ):
-                st.info("This module is coming soon!")
+
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Add direct link buttons as backup
-st.markdown("---")
-st.markdown("### 🔗 Direct Access Links")
+st.markdown("""
+<div class="backup-links">
+    <h3 style="text-align: center; color: #1e3c72; margin-bottom: 1rem;">🔗 Direct Access Links</h3>
+    <div style="text-align: center;">
+        <a href="https://lglportsagents.streamlit.app/" target="_blank" class="backup-button">⚓ Ports & Agents</a>
+        <a href="https://lgldubaidynamicbot.streamlit.app/" target="_blank" class="backup-button">🚢 Vessel & Time</a>
+        <a href="https://qoder4.streamlit.app/" target="_blank" class="backup-button">👥 HR Employee</a>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    if st.button("🚀 Open Ports & Agents", key="direct_ports"):
-        st.markdown('<a href="https://lglportsagents.streamlit.app/" target="_blank">Click here if redirect fails</a>', unsafe_allow_html=True)
-
-with col2:
-    if st.button("🚀 Open Vessel & Time", key="direct_vessel"):
-        st.markdown('<a href="https://lgldubaidynamicbot.streamlit.app/" target="_blank">Click here if redirect fails</a>', unsafe_allow_html=True)
-
-with col3:
-    if st.button("🚀 Open HR Employee", key="direct_hr"):
-        st.markdown('<a href="https://qoder4.streamlit.app/" target="_blank">Click here if redirect fails</a>', unsafe_allow_html=True)
-
-# Footer
+# Footer with JavaScript for enhanced functionality
 st.markdown("""
 ---
 <div style="text-align: center; padding: 2rem; color: #718096;">
     <p><strong>LGL Digital Solutions Hub</strong> | Powered by Streamlit | © 2025 LGL Group</p>
     <p>Transforming Maritime Operations Through Digital Innovation</p>
 </div>
+
+<script>
+// Enhanced click handling for module buttons
+document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers to all module buttons
+    const moduleButtons = document.querySelectorAll('.module-button:not(.coming-soon)');
+    moduleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const onclick = this.getAttribute('onclick');
+            if (onclick) {
+                eval(onclick);
+            }
+        });
+    });
+    
+    // Add hover effects
+    const moduleContainers = document.querySelectorAll('.module-container');
+    moduleContainers.forEach(container => {
+        container.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px)';
+            this.style.boxShadow = '0 15px 45px rgba(0,0,0,0.2)';
+        });
+        
+        container.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+            this.style.boxShadow = '0 8px 32px rgba(0,0,0,0.08)';
+        });
+    });
+});
+
+// Fallback function for opening URLs
+function openApp(url) {
+    window.open(url, '_blank');
+}
+</script>
 """, unsafe_allow_html=True)
