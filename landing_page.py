@@ -1,0 +1,272 @@
+import streamlit as st
+import webbrowser
+
+# Page configuration
+st.set_page_config(
+    page_title="LGL Digital Solutions Hub",
+    page_icon="🚢",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Custom CSS for professional styling
+st.markdown("""
+<style>
+    .main-header {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+    
+    .main-header h1 {
+        color: white;
+        font-size: 3rem;
+        margin: 0;
+        font-weight: 700;
+    }
+    
+    .main-header p {
+        color: #e8f4f8;
+        font-size: 1.2rem;
+        margin: 0.5rem 0 0 0;
+    }
+    
+    .module-container {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        margin: 1rem;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+        border: 1px solid #e1e8ed;
+        transition: all 0.3s ease;
+        text-align: center;
+        height: 300px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .module-container:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+        border-color: #2a5298;
+    }
+    
+    .module-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        color: #2a5298;
+    }
+    
+    .module-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e3c72;
+        margin-bottom: 0.5rem;
+    }
+    
+    .module-subtitle {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #4a5568;
+        margin-bottom: 1rem;
+    }
+    
+    .module-description {
+        font-size: 0.95rem;
+        color: #718096;
+        line-height: 1.5;
+        margin-bottom: 1.5rem;
+        flex-grow: 1;
+    }
+    
+    .module-button {
+        background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .module-button:hover {
+        background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        transform: scale(1.02);
+        box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+    }
+    
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .grid-container {
+            grid-template-columns: 1fr;
+        }
+        .main-header h1 {
+            font-size: 2rem;
+        }
+    }
+    
+    .stApp {
+        background-color: #f8fafc;
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Header section
+st.markdown("""
+<div class="main-header">
+    <h1>🚢 LGL Digital Solutions Hub</h1>
+    <p>Your Gateway to Maritime & Corporate Excellence</p>
+</div>
+""", unsafe_allow_html=True)
+
+# Module data
+modules = [
+    {
+        "icon": "⚓",
+        "title": "PORTS & AGENTS",
+        "subtitle": "PORT DATA AND AGENTS",
+        "description": "Query Port Data, free time at different ports, Agent details, Port conditional data and review and special instructions for the specified port",
+        "url": "https://lglportsagents.streamlit.app/",
+        "available": True
+    },
+    {
+        "icon": "🚢",
+        "title": "VESSEL & TIME",
+        "subtitle": "VESSEL AND THEIR DETAILS",
+        "description": "Review each voyage and the port calls under that voyage. Gets the latest up to date information at your fingertips. Sample data for your review",
+        "url": "https://lgldubaidynamicbot.streamlit.app/",
+        "available": True
+    },
+    {
+        "icon": "👥",
+        "title": "HR EMPLOYEE",
+        "subtitle": "HR AND EMPLOYEE SERVICES",
+        "description": "From checking the latest in HR policies to requesting for any company or personal related matters",
+        "url": "https://qoder4.streamlit.app/",
+        "available": True
+    },
+    {
+        "icon": "📊",
+        "title": "OPERATIONS",
+        "subtitle": "OPERATIONAL MANAGEMENT",
+        "description": "Streamline daily operations, track performance metrics, and manage operational workflows with comprehensive tools and analytics",
+        "url": "#",
+        "available": False
+    },
+    {
+        "icon": "💰",
+        "title": "FINANCE",
+        "subtitle": "FINANCIAL MANAGEMENT",
+        "description": "Access financial reports, budget tracking, expense management, and comprehensive financial analytics for informed decision making",
+        "url": "#",
+        "available": False
+    },
+    {
+        "icon": "📋",
+        "title": "COMPLIANCE",
+        "subtitle": "REGULATORY COMPLIANCE",
+        "description": "Monitor compliance requirements, regulatory updates, audit trails, and ensure adherence to maritime and corporate standards",
+        "url": "#",
+        "available": False
+    },
+    {
+        "icon": "📈",
+        "title": "ANALYTICS",
+        "subtitle": "BUSINESS INTELLIGENCE",
+        "description": "Generate insights from data analytics, performance dashboards, KPI tracking, and strategic business intelligence reports",
+        "url": "#",
+        "available": False
+    },
+    {
+        "icon": "🔧",
+        "title": "MAINTENANCE",
+        "subtitle": "ASSET MANAGEMENT",
+        "description": "Track vessel maintenance schedules, equipment status, repair histories, and optimize maintenance operations efficiently",
+        "url": "#",
+        "available": False
+    },
+    {
+        "icon": "📞",
+        "title": "SUPPORT",
+        "subtitle": "CUSTOMER SUPPORT",
+        "description": "Access help desk, technical support, documentation, training materials, and customer service resources",
+        "url": "#",
+        "available": False
+    }
+]
+
+# Create grid layout
+cols = st.columns(3)
+
+for i, module in enumerate(modules):
+    col_index = i % 3
+    
+    with cols[col_index]:
+        # Create module container
+        if module["available"]:
+            button_text = "Launch Application"
+            button_style = "module-button"
+        else:
+            button_text = "Coming Soon"
+            button_style = "module-button"
+            
+        st.markdown(f"""
+        <div class="module-container">
+            <div>
+                <div class="module-icon">{module["icon"]}</div>
+                <div class="module-title">{module["title"]}</div>
+                <div class="module-subtitle">{module["subtitle"]}</div>
+            </div>
+            <div class="module-description">
+                {module["description"]}
+            </div>
+            <div>
+                <a href="{module["url"]}" target="_blank" class="{button_style}">
+                    {button_text}
+                </a>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+# Footer
+st.markdown("""
+---
+<div style="text-align: center; padding: 2rem; color: #718096;">
+    <p><strong>LGL Digital Solutions Hub</strong> | Powered by Streamlit | © 2025 LGL Group</p>
+    <p>Transforming Maritime Operations Through Digital Innovation</p>
+</div>
+""", unsafe_allow_html=True)
+
+# JavaScript for handling clicks (alternative approach)
+st.markdown("""
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const buttons = document.querySelectorAll('.module-button');
+    buttons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            if (this.href === '#') {
+                e.preventDefault();
+                alert('This module is coming soon!');
+            }
+        });
+    });
+});
+</script>
+""", unsafe_allow_html=True)
